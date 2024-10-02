@@ -1,106 +1,152 @@
-const startButton = document.getElementById('start-btn')
-const nextButton = document.getElementById('next-btn')
-const questionContainerElement = document.getElementById('question-container')
-const questionElement = document.getElementById('question')
-const answerButtonsElement = document.getElementById('answer-buttons')
+const startButton = document.getElementById('start-btn');
+const nextButton = document.getElementById('next-btn');
+const restartButton = document.getElementById('restart-btn');
+const exitButton = document.getElementById('exit-btn');
+const questionContainerElement = document.getElementById('question-container');
+const startPageElement = document.getElementById('start-page');
+const endPageElement = document.getElementById('end-page');
+const questionElement = document.getElementById('question');
+const answerButtonsElement = document.getElementById('answer-buttons');
+const feedbackElement = document.getElementById('feedback');
+const questionNumberElement = document.getElementById('question-number');
+const scoreElement = document.getElementById('score');
+const finalScoreElement = document.getElementById('final-score');
+const finalFeedbackElement = document.getElementById('final-feedback');
 
-let shuffledQuestions, currentQuestionIndex
+let shuffledQuestions, currentQuestionIndex, score;
 
-startButton.addEventListener('click', startGame)
+startButton.addEventListener('click', startGame);
 nextButton.addEventListener('click', () => {
-    currentQuestionIndex++
-    setNextQuestion()
-})
+    currentQuestionIndex++;
+    setNextQuestion();
+});
+restartButton.addEventListener('click', restartGame);
+exitButton.addEventListener('click', exitGame);
 
 function startGame() {
-    console.log('Started')
-    shuffledQuestions = questions.sort(() => Math.random() - .5)
-    currentQuestionIndex = 0
-    startButton.classList.add('hide')
-    questionContainerElement.classList.remove('hide')
-    setNextQuestion()
-
+    shuffledQuestions = questions.sort(() => Math.random() - .5);
+    currentQuestionIndex = 0;
+    score = 0;
+    startPageElement.classList.add('hide');
+    questionContainerElement.classList.remove('hide');
+    feedbackElement.innerText = '';
+    updateStatus();
+    setNextQuestion();
 }
 
-function setNextQuestion(){
-    resetState()
-    showQuestion(shuffledQuestions[currentQuestionIndex])
+function setNextQuestion() {
+    resetState();
+    showQuestion(shuffledQuestions[currentQuestionIndex]);
+    updateStatus();
 }
 
-function showQuestion(question){
-    questionElement.innerText = question.question
+function showQuestion(question) {
+    questionElement.innerText = question.question;
     question.answers.forEach(answer => {
-        const button = document.createElement('button')
-        button.innerText = answer.text
-        button.classList.add('btn')
-        if (answer.correct){
-            button.dataset.correct = answer.correct
+        const button = document.createElement('button');
+        button.innerText = answer.text;
+        button.classList.add('btn');
+        if (answer.correct) {
+            button.dataset.correct = answer.correct;
         }
-        button.addEventListener('click',selectAnswer)
-        answerButtonsElement.appendChild(button)
-    })
+        button.addEventListener('click', selectAnswer);
+        answerButtonsElement.appendChild(button);
+    });
 }
 
 function resetState() {
-    clearStatusClass(document.body)
-    nextButton.classList.add('hide')
+    clearStatusClass(document.body);
+    nextButton.classList.add('hide');
+    feedbackElement.innerText = '';
     while (answerButtonsElement.firstChild) {
-        answerButtonsElement.removeChild(answerButtonsElement.firstChild)
+        answerButtonsElement.removeChild(answerButtonsElement.firstChild);
     }
 }
 
 function selectAnswer(e) {
-    const selectedButton = e.target
-    const correct= selectedButton.dataset.correct
-    setStatusClass(document.body, correct)
+    const selectedButton = e.target;
+    const correct = selectedButton.dataset.correct === 'true';
+    setStatusClass(document.body, correct);
     Array.from(answerButtonsElement.children).forEach(button => {
-        setStatusClass(button,button.dataset.correct)
-    })
+        setStatusClass(button, button.dataset.correct);
+    });
+    if (correct) {
+        feedbackElement.innerText = 'Correct Answer!';
+        score++;
+    } else {
+        feedbackElement.innerText = 'Wrong Answer!';
+    }
+    updateStatus();
     if (shuffledQuestions.length > currentQuestionIndex + 1) {
-        nextButton.classList.remove('hide')
-    }
-    else {
-        startButton.innerText = 'Restart'
-        startButton.classList.remove('hide')
+        nextButton.classList.remove('hide');
+    } else {
+        finishQuiz();
     }
 }
 
-function setStatusClass(element, correct){
-    clearStatusClass(element)
-    if (correct){
-        element.classList.add('correct')
-    }
-    else {
-        element.classList.add('wrong')
+function setStatusClass(element, correct) {
+    clearStatusClass(element);
+    if (correct) {
+        element.classList.add('correct');
+    } else {
+        element.classList.add('wrong');
     }
 }
 
-function clearStatusClass(element){
-    element.classList.remove('correct')
-    element.classList.remove('wrong')
+function clearStatusClass(element) {
+    element.classList.remove('correct');
+    element.classList.remove('wrong');
+}
+
+function updateStatus() {
+    questionNumberElement.innerText = `Question: ${currentQuestionIndex + 1}`;
+    scoreElement.innerText = `Score: ${score}/5`;
+}
+
+function finishQuiz() {
+    questionContainerElement.classList.add('hide');
+    endPageElement.classList.remove('hide');
+    finalScoreElement.innerText = `Your final score is: ${score}/5`;
+
+    let finalMessage = '';
+    if (score === 5) {
+        finalMessage = 'Congratulations!!!\n You aced the quiz';
+    } else if (score >= 3) {
+        finalMessage = 'Good job!!!\nYou did well';
+    } else {
+        finalMessage = 'Better luck next time!!!\nKeep practicing';
+    }
+    finalFeedbackElement.innerText = finalMessage;
+}
+
+function restartGame() {
+    endPageElement.classList.add('hide');
+    startPageElement.classList.remove('hide');
+}
+
+function exitGame() {
+    window.close();
 }
 
 const questions = [
     {
         question: 'What is the capital of France?',
         answers: [
-            { text: 'London', correct: false},
-            { text: 'Berlin', correct: false},
-            { text: 'Madrid', correct: false},
-            { text: 'Paris', correct: true},
+            { text: 'London', correct: false },
+            { text: 'Berlin', correct: false },
+            { text: 'Madrid', correct: false },
+            { text: 'Paris', correct: true },
         ]
     },
-
     {
         question: 'Which planet is known as the Red Planet?',
         answers: [
-            { text: 'Jupiter', correct: false},
-            { text: 'Venus', correct: false},
-            { text: 'Mars', correct: true},
-            { text: 'Saturn', correct: false},
+            { text: 'Jupiter', correct: false },
+            { text: 'Venus', correct: false },
+            { text: 'Mars', correct: true },
+            { text: 'Saturn', correct: false },
         ]
     },
-
     {
         question: 'Who wrote the play "Romeo and Juliet"?',
         answers: [
@@ -130,4 +176,4 @@ const questions = [
             { text: 'Helium', correct: false},
         ]
     }
-]
+];

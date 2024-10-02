@@ -5,22 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="styles.css" rel="stylesheet">
     <script defer src="script.js"></script>
-    <title>Quiz App</title>
+    <title>Quizify</title>
 </head>
 <body>
     <div class="container">
-        <div id="question-container" class="hide">
-            <div id="question">Question</div>
-            <div id="answer-buttons" class="btn-grid">
-                <button class ="btn">Answer 1</button>
-                <button class ="btn">Answer 2</button>
-                <button class ="btn">Answer 3</button>
-                <button class ="btn">Answer 4</button>
-            </div>
+        <div id="start-page">
+            <h1>Welcome to Quizify!!!</h1>
+            <button id="start-btn" class="start-btn btn">Start Quiz</button>
         </div>
-        <div class="controls">
-            <button id="start-btn" class="start-btn btn">Start</button>
+
+        <div id="question-container" class="hide">
+            <div id="status-container">
+                <p id="question-number">Question: 1</p>
+                <p id="score">Score: 0/5</p>
+            </div>
+            <div id="question" class="bold-text">Question</div>
+            <div id="answer-buttons" class="btn-grid"></div>
+            <p id="feedback" class="feedback"></p>
             <button id="next-btn" class="next-btn btn hide">Next</button>
+        </div>
+
+        <div id="end-page" class="hide">
+            <h2>Quiz Completed!!!</h2>
+            <p id="final-feedback"></p>
+            <p id="final-score"></p>
+            <button id="restart-btn" class="btn">Start Again</button>
+            <button id="exit-btn" class="btn">Exit</button>
         </div>
     </div>
 </body>
